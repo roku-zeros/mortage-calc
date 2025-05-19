@@ -26,7 +26,6 @@
 
 ## Установка
 
-Опишите, как установить ваш проект. Например:
 bash
 git clone [https://github.com/ваш_репозиторий.git](https://github.com/roku-zeros/mortage-calc.git)
 ## Использование
