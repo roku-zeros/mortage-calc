@@ -39,17 +39,17 @@ func TestCache_Delete(t *testing.T) {
 func TestCache_GetCurrID(t *testing.T) {
 	cache := NewCache()
 
-	if currID := cache.GetCurrID(); currID != 0 {
+	if currID := cache.GetCurrID(); currID != -1 {
 		t.Errorf("Expected current ID to be 0, but got %d", currID)
 	}
 
 	cache.Set("value1")
-	if currID := cache.GetCurrID(); currID != 1 {
+	if currID := cache.GetCurrID(); currID != 0 {
 		t.Errorf("Expected current ID to be 1, but got %d", currID)
 	}
 
 	cache.Set("value2")
-	if currID := cache.GetCurrID(); currID != 2 {
+	if currID := cache.GetCurrID(); currID != 1 {
 		t.Errorf("Expected current ID to be 2, but got %d", currID)
 	}
 }

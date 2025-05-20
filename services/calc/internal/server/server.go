@@ -1,7 +1,7 @@
 package server
 
 import (
-	"mortage-calc/services/calc/internal/providers"
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/providers"
 )
 
 type Server struct {

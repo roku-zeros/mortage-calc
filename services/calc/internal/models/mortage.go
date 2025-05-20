@@ -1,7 +1,7 @@
 package models
 
 type Calculation struct {
-	ID         uint64    `json:"id"`
+	ID         int    `json:"id"`
 	Params     Params    `json:"params"`
 	Program    Program   `json:"program"`
 	Aggregates Aggregate `json:"aggregates"`

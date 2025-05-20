@@ -32,7 +32,6 @@ func TestCalculateMortgage(t *testing.T) {
 				t.Errorf("expected loan sum %d, got %d", tt.expectedLoanSum, loanSum)
 			}
 
-			// Проверяем дату последнего платежа
 			startDate := time.Now()
 			expectedLastPaymentDate := startDate.AddDate(0, tt.months, 0)
 			if lastPaymentDate.Year() != expectedLastPaymentDate.Year() || lastPaymentDate.Month() != expectedLastPaymentDate.Month() || lastPaymentDate.Day() != expectedLastPaymentDate.Day() {

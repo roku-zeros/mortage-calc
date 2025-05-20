@@ -2,21 +2,24 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"mortage-calc/services/calc/internal/app"
-	"mortage-calc/services/calc/internal/config"
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/app"
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/config"
 )
 
 func main() {
-	configPath := "../config/config.yaml"
-	config, err := config.LoadConfig(configPath)
+	configPath := flag.String("config", "/config.yaml", "Path to the config file")
+	flag.Parse()
+
+	config, err := config.LoadConfig(*configPath)
 	if err != nil {
-		log.Fatalf("Failed to load config from %s: %+v", configPath, err)
+		log.Fatalf("Failed to load config from %s: %+v", *configPath, err)
 	}
 
 	createCtx, cancel := context.WithTimeout(context.Background(), time.Second*10)

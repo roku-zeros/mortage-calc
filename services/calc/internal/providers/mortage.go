@@ -2,14 +2,19 @@ package providers
 
 import (
 	"context"
-	mortagecalc "mortage-calc/lib/mortgagecalc"
-	pkgerrors "mortage-calc/services/calc/internal/errors"
-	"mortage-calc/services/calc/internal/models"
+
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/models"
+
+	mortagecalc "github.com/roku-zeros/mortage-calc/lib/mortgagecalc"
+	pkgerrors "github.com/roku-zeros/mortage-calc/services/calc/internal/errors"
 )
 
-func (p *MortageProvider) CreateMortage(ctx context.Context, params models.Params) error {
+func (p *MortageProvider) CreateMortage(ctx context.Context, params models.Params) (models.Calculation, error) {
 	if params.Program == nil {
-		return pkgerrors.ErrNoProgram
+		return models.Calculation{}, pkgerrors.ErrNoProgram
+	}
+	if float32(params.InitialPayment) < float32(params.ObjectCost)*0.2 {
+		return models.Calculation{}, pkgerrors.ErrBadInitialPayment
 	}
 
 	var rate int
@@ -27,9 +32,9 @@ func (p *MortageProvider) CreateMortage(ctx context.Context, params models.Param
 		rate = 10
 	}
 	if count == 0 {
-		return pkgerrors.ErrNoProgram
+		return models.Calculation{}, pkgerrors.ErrNoProgram
 	} else if count > 1 {
-		return pkgerrors.ErrMoreThanOneProgram
+		return models.Calculation{}, pkgerrors.ErrMoreThanOneProgram
 	}
 
 	monthlyPayment, overpayment, loanSum, lastPaymentDate := mortagecalc.CalculateMortgage(params.ObjectCost, params.InitialPayment, params.Months, rate)
@@ -47,8 +52,10 @@ func (p *MortageProvider) CreateMortage(ctx context.Context, params models.Param
 		Aggregates: aggregate,
 	}
 
-	p.storage.CreateMortage(ctx, calculation)
-	return nil
+	id := p.storage.CreateMortage(ctx, calculation)
+	calculation.ID = id
+
+	return calculation, nil
 }
 
 func (p *MortageProvider) GetAllMortages(ctx context.Context) ([]models.Calculation, error) {

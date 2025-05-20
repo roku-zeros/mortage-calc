@@ -2,15 +2,17 @@ package providers
 
 import (
 	"context"
-	pkgerrors "mortage-calc/services/calc/internal/errors"
-	"mortage-calc/services/calc/internal/models"
-	storage "mortage-calc/services/calc/internal/repository/database"
 	"testing"
+
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/models"
+
+	pkgerrors "github.com/roku-zeros/mortage-calc/services/calc/internal/errors"
+	storage "github.com/roku-zeros/mortage-calc/services/calc/internal/repository/database"
 )
 
 func TestCreateMortage(t *testing.T) {
 	ctx := context.Background()
-	storage, _ := storage.NewStorage(context.Background())
+	storage := storage.NewStorage(context.Background())
 	provider := &MortageProvider{storage: storage}
 	truePtr := new(bool)
 	*truePtr = true
@@ -28,6 +30,17 @@ func TestCreateMortage(t *testing.T) {
 			expectError: pkgerrors.ErrNoProgram,
 		},
 		{
+			name: "No program",
+			params: models.Params{
+				Program: &models.Program{
+					Base:     new(bool),
+					Salary:   new(bool),
+					Military: new(bool),
+				},
+			},
+			expectError: pkgerrors.ErrNoProgram,
+		},
+		{
 			name: "More than one program",
 			params: models.Params{
 				Program: &models.Program{
@@ -37,6 +50,17 @@ func TestCreateMortage(t *testing.T) {
 				},
 			},
 			expectError: pkgerrors.ErrMoreThanOneProgram,
+		},
+		{
+			name: "The initial payment should be more",
+			params: models.Params{
+				ObjectCost:     5_000_000,
+				InitialPayment: 900_000,
+				Program: &models.Program{
+					Base: truePtr,
+				},
+			},
+			expectError: pkgerrors.ErrBadInitialPayment,
 		},
 		{
 			name: "Valid program",
@@ -51,7 +75,7 @@ func TestCreateMortage(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := provider.CreateMortage(ctx, tt.params)
+			_, err := provider.CreateMortage(ctx, tt.params)
 			if tt.expectError != nil {
 				if err != tt.expectError {
 					t.Errorf("expected error %v, got %v", tt.expectError, err)
@@ -73,8 +97,10 @@ func TestCreateMortage(t *testing.T) {
 
 func TestGetAllMortages(t *testing.T) {
 	ctx := context.Background()
-	storage, _ := storage.NewStorage(context.Background())
+	storage := storage.NewStorage(context.Background())
 	provider := &MortageProvider{storage: storage}
+	truePtr := new(bool)
+	*truePtr = true
 
 	tests := []struct {
 		name        string
@@ -90,7 +116,15 @@ func TestGetAllMortages(t *testing.T) {
 			name: "Non-empty cache",
 			storageData: []models.Calculation{
 				{
-					ID: 1,
+					ID: 0,
+					Params: models.Params{
+						ObjectCost:     3_000_000,
+						InitialPayment: 1_500_000,
+						Months:         120,
+					},
+					Program: models.Program{
+						Military: truePtr,
+					},
 				},
 			},
 			expectError: nil,

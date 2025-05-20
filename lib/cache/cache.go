@@ -2,32 +2,39 @@ package cache
 
 import (
 	"sync"
-	"sync/atomic"
 )
 
 type Cache struct {
-	data   sync.Map
-	currId uint64
+	data sync.Map
+
+	currId int
+	mu     sync.Mutex
 }
 
 func NewCache() *Cache {
-	return &Cache{}
+	return &Cache{
+		currId: -1,
+	}
 }
 
-func (c *Cache) GetCurrID() uint64 {
+func (c *Cache) GetCurrID() int {
 	return c.currId
 }
 
-func (c *Cache) Set(value interface{}) uint64 {
-	id := atomic.AddUint64(&c.currId, 1) - 1
-	c.data.Store(id, value)
-	return id
+func (c *Cache) Set(value interface{}) int {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.currId++
+	c.data.Store(c.currId, value)
+
+	return c.currId
 }
 
-func (c *Cache) Get(id uint64) (interface{}, bool) {
+func (c *Cache) Get(id int) (interface{}, bool) {
 	return c.data.Load(id)
 }
 
-func (c *Cache) Delete(id uint64) {
+func (c *Cache) Delete(id int) {
 	c.data.Delete(id)
 }

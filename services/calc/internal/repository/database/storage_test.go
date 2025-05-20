@@ -2,12 +2,13 @@ package storage
 
 import (
 	"context"
-	"mortage-calc/services/calc/internal/models"
 	"testing"
+
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/models"
 )
 
 func TestMortagesStorage(t *testing.T) {
-	storage, _ := NewStorage(context.Background())
+	storage := NewStorage(context.Background())
 
 	calculation1 := models.Calculation{
 		Params: models.Params{

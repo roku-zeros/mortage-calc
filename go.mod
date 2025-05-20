@@ -1,4 +1,4 @@
-module mortage-calc
+module github.com/roku-zeros/mortage-calc
 
 go 1.22.1
 

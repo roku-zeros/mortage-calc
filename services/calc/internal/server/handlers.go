@@ -2,8 +2,9 @@ package server
 
 import (
 	"encoding/json"
-	"mortage-calc/services/calc/internal/models"
 	"net/http"
+
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/models"
 )
 
 func (s *Server) Ping(w http.ResponseWriter, r *http.Request) {
@@ -20,13 +21,15 @@ func (s *Server) Execute(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = s.mortageProvider.CreateMortage(r.Context(), req)
+	calculation, err := s.mortageProvider.CreateMortage(r.Context(), req)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(calculation) //nolint
+
 }
 
 func (s *Server) Cache(w http.ResponseWriter, r *http.Request) {
@@ -38,5 +41,5 @@ func (s *Server) Cache(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(calculations)
+	json.NewEncoder(w).Encode(calculations) //nolint
 }

@@ -3,11 +3,12 @@ package app
 import (
 	"context"
 	"fmt"
-	"mortage-calc/lib/middleware"
-	"mortage-calc/services/calc/internal/providers"
-	storage "mortage-calc/services/calc/internal/repository/database"
-	"mortage-calc/services/calc/internal/server"
 	"net/http"
+
+	"github.com/roku-zeros/mortage-calc/lib/middleware"
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/providers"
+	storage "github.com/roku-zeros/mortage-calc/services/calc/internal/repository/database"
+	"github.com/roku-zeros/mortage-calc/services/calc/internal/server"
 )
 
 type Server interface {
@@ -20,7 +21,7 @@ type App struct {
 }
 
 func New(ctx context.Context, port string) (*App, error) {
-	storage, _ := storage.NewStorage(ctx)
+	storage := storage.NewStorage(ctx)
 	taskProvider := providers.NewMortageProvider(storage)
 
 	server := server.New(taskProvider)

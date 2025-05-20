@@ -3,15 +3,14 @@ package storage
 import (
 	"context"
 
-	"mortage-calc/lib/cache"
-
+	"github.com/roku-zeros/mortage-calc/lib/cache"
 )
 
 type Storage struct {
 	db *cache.Cache
 }
 
-func NewStorage(ctx context.Context) (*Storage, error) {
+func NewStorage(ctx context.Context) *Storage {
 	db := cache.NewCache()
-	return &Storage{db: db}, nil
+	return &Storage{db: db}
 }
